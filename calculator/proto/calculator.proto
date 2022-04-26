@@ -9,6 +9,7 @@ service CalculationService {
   rpc Prime(PrimeRequest) returns (stream PrimeResponse);
   rpc Avg(stream AvgRequest) returns (AvgResponse);
   rpc Max(stream MaxRequest) returns (stream MaxResponse);
+  rpc Sqrt(SqrtRequest) returns (SqrtResponse);
 }
 
 message SumRequest {
@@ -41,4 +42,12 @@ message MaxRequest {
 
 message MaxResponse {
   int64 result = 1;
+}
+
+message SqrtRequest {
+  int64 number = 1;
+}
+
+message SqrtResponse {
+  double result = 1;
 }

@@ -36,4 +36,7 @@ func main() {
 
 	// bidirectional stream
 	service.GetMax([]int64{11, 23, 21, 34, 55, 77})
+
+	// unary with error handle
+	service.GetSqrt(-100)
 }

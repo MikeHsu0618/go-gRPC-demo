@@ -2,11 +2,14 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"time"
 
 	pb "go-grpc-demo/calculator/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var ctx = context.Background()
@@ -16,6 +19,7 @@ type Service interface {
 	GetPrime(num int64)
 	GetAvg(nums []int64)
 	GetMax(nums []int64)
+	GetSqrt(num int64)
 }
 
 type service struct {
@@ -33,6 +37,25 @@ func (s *service) GetSum(firstNum int64, secondNum int64) *pb.SumResponse {
 		SecondNumber: secondNum,
 	})
 	return r
+}
+
+func (s *service) GetSqrt(num int64) {
+	log.Println("GetSqrt was invoked")
+	r, err := s.Sqrt(ctx, &pb.SqrtRequest{Number: num})
+	if err != nil {
+		e, ok := status.FromError(err)
+		if ok {
+			log.Printf("A gRPC error message : %v \n", e.Message())
+			log.Printf("A gRPC error Code : %v \n", e.Code())
+
+			if e.Code() == codes.InvalidArgument {
+				log.Println("We probably sent a negative number")
+			}
+			return
+		}
+		log.Fatalf("A non gRPC error : %v \n", err)
+	}
+	fmt.Println("Get Sqrt : ", r.GetResult())
 }
 
 func (s *service) GetPrime(num int64) {

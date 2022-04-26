@@ -2,17 +2,15 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
+	"math"
 
 	pb "go-grpc-demo/calculator/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
-
-// type Service interface {
-// 	Sum(ctx context.Context, in *pb.SumRequest) (*pb.SumResponse, error)
-// 	Prime(in *pb.PrimeRequest, stream pb.CalculationService_PrimeServer) error
-// 	Avg(stream pb.CalculationService_AvgServer) error
-// }
 
 type service struct {
 	pb.UnimplementedCalculationServiceServer
@@ -25,6 +23,19 @@ func NewService() pb.CalculationServiceServer {
 func (s *service) Sum(ctx context.Context, in *pb.SumRequest) (*pb.SumResponse, error) {
 	log.Printf("Get First Number : %v, Second Number : %v", in.GetFirstNumber(), in.SecondNumber)
 	return &pb.SumResponse{Result: in.GetFirstNumber() + in.GetSecondNumber()}, nil
+}
+
+func (s *service) Sqrt(ctx context.Context, in *pb.SqrtRequest) (*pb.SqrtResponse, error) {
+	num := in.GetNumber()
+	log.Printf("Get Number : %v", num)
+
+	if num < 0 {
+		return nil, status.Error(
+			codes.InvalidArgument,
+			fmt.Sprintf("Received a negative number: %d", num),
+		)
+	}
+	return &pb.SqrtResponse{Result: math.Sqrt(float64(num))}, nil
 }
 
 func (s *service) Prime(in *pb.PrimeRequest, stream pb.CalculationService_PrimeServer) error {
