@@ -4,6 +4,8 @@ package greet;
 
 option go_package = ".";
 
+import "google/api/annotations.proto";
+
 message GreetRequest {
   string first_name =1;
 }
@@ -14,7 +16,12 @@ message GreetResponse {
 
 service GreetService {
   // unary
-  rpc Greet (GreetRequest) returns (GreetResponse);
+  rpc Greet (GreetRequest) returns (GreetResponse) {
+    option (google.api.http) = {
+      post: "/v1/greet",
+      body: "*"
+    };
+  };
 
   // server stream
   rpc GreetManyTimes (GreetRequest) returns (stream GreetResponse);
